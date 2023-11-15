@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProduitService } from './../services/produit.service';
 import { Produit } from '../model/Produit';
+import { Categorie } from '../model/Categorie';
 
 @Component({
   selector: 'app-update-produit',
@@ -10,17 +11,28 @@ import { Produit } from '../model/Produit';
 })
 export class UpdateProduitComponent implements OnInit{
    ProduitSelectionner=new Produit();
-  constructor(private activateRoute:ActivatedRoute,private router:Router,private produitService:ProduitService){}
-  ngOnInit() {
-    //console.log(this.activateRoute.snapshot.params['id']);
-    this.ProduitSelectionner=this.produitService.ConsulterProduit(this.activateRoute.snapshot.params['id']);
-    console.log(this.ProduitSelectionner);
+   UpdateIdCat! : number;
+   categories !:Categorie[];
+  constructor(private activatedRoute:ActivatedRoute,private router:Router,private produitService:ProduitService){}
 
+  ngOnInit(): void {
+    this.produitService.listeCategories().
+    subscribe(cats => {this.categories = cats;
+    console.log(cats);
+    });
+    this.produitService.consulterProduit(this.activatedRoute.snapshot.params['id']).
+    subscribe( prod =>{ this.ProduitSelectionner = prod;
+    this.UpdateIdCat =this.ProduitSelectionner.categorie.idCat;
+    } )
   }
+
   updateProduit()
-  { //console.log(this.currentProduit);
-  this.produitService.updateProduit(this.ProduitSelectionner);
-  this.router.navigate(["produits"])
+  {
+    this.ProduitSelectionner.categorie = this.categories.
+ find(cat => cat.idCat == this.UpdateIdCat)!;
+this.produitService.updateProduit(this.ProduitSelectionner).subscribe(prod => {
+this.router.navigate(['produits']); }
+);
   }
 
 }

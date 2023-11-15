@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Produit } from '../model/Produit';
 import { ProduitService } from '../services/produit.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-produits',
@@ -8,16 +9,28 @@ import { ProduitService } from '../services/produit.service';
   styleUrls: ['./produits.component.css']
 })
 export class ProduitsComponent implements OnInit{
-  produits : Produit[];
-  constructor(private produitService: ProduitService ) {
-    this.produits = produitService.listeProduits();
+  produits : Produit[]=[];
+  constructor(private produitService: ProduitService ,private router :Router) {
     }
-    ngOnInit() {
-      // Vous pouvez éventuellement ajouter des actions d'initialisation ici.
+    ngOnInit(): void {
+      this.listeProduit();
+
     }
-    SupprimerProduit(prod:Produit)
-    {//console.log(prod);
-      this.produitService.SupprimerProduit(prod);
+    listeProduit(){
+      this.produitService.listeProduit().subscribe(prods => {
+        console.log(prods);
+        this.produits = prods;
+      });
+
+    }
+    SupprimerProduit(p: Produit)
+    {
+    let conf = confirm("Etes-vous sûr ?");
+    if (conf)
+    this.produitService.supprimerProduit(p.idProduit).subscribe(() => {
+    console.log("produit supprimé");
+    this.listeProduit();
+    });
     }
 
 }
