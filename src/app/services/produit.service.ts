@@ -63,7 +63,10 @@ export class ProduitService {
 listeCategories():Observable<Categorie[]>{
   return this.http.get<Categorie[]>(ApiCat+"/afficherCategories");
   }
-
+  rechercherParCategorie(idCat: number):Observable<Produit[]> {
+    const url = apiURL+`/prodscat/${idCat}`;
+    return this.http.get<Produit[]>(url);
+    }
 }
 
 
